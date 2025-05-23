@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "Prisma.prisma",
+    "formulahendry.auto-rename-tag",
+    "natqe.reload",
+    "stivo.tailwind-fold",
+    "yoavbls.pretty-ts-errors",
+    "usernamehw.errorlens",
+    "Gruntfuggly.todo-tree",
+    "wix.vscode-import-cost",
+    "oderwat.indent-rainbow"
+  ]
+}
