@@ -3,18 +3,18 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
   subsets: ["latin"],
+  variable: "--font-geist-sans",
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
+  variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
-  title: "Novel Smith",
   description: "あなただけの本を作ろう",
+  title: "Novel Smith",
 };
 
 export default function RootLayout({
