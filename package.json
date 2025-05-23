@@ -27,7 +27,8 @@
     "eslint-config-prettier": "^10.1.5",
     "postcss-load-config": "^6.0.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "typescript-eslint": "^8.32.1"
   },
   "type": "module"
 }
