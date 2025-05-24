@@ -8,6 +8,6 @@ function Page() {
       </div>
     </main>
   );
-};
+}
 
 export default Page;
