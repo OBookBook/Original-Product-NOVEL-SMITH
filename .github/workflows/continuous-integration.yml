@@ -29,7 +29,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm run lint
         env:
-          DEBUG_URL: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
+          DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
 
   format:
     needs: setup
