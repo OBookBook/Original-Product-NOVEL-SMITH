@@ -24,7 +24,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
-    "plugins": [{ "name": "next" }],
+    "plugins": [{ "name": "next" }]
   },
 
   "include": [
