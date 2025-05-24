@@ -1,9 +1,12 @@
 name: Continuous Integration
 
 on:
-  push:
-    branches-ignore:
+  pull_request:
+    branches:
       - main
+    types: [opened, synchronize, reopened]
+    paths-ignore:
+      - "README.md"
 
 env:
   NODE_VERSION: "20.11.1"
