@@ -33,6 +33,8 @@ jobs:
       - run: npm run lint
         env:
           DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
 
   format:
     needs: setup
