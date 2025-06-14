@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
+import Navigation from "@/components/auth/Navigation";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -27,7 +28,26 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="flex min-h-screen flex-col">
+          <Navigation />
+
+          <main className="container mx-auto max-w-screen-md flex-1 px-2">
+            {children}
+          </main>
+          <footer className="py-5">
+            <div className="text-center text-sm">
+              Copyright © All rights reserved |{" "}
+              <a
+                className="underline"
+                href="https://github.com/OBookBook"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Naobe
+              </a>
+            </div>
+          </footer>
+        </div>
       </body>
     </html>
   );
