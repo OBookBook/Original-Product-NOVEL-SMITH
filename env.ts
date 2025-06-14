@@ -7,12 +7,16 @@ export const env = createEnv({
   },
   emptyStringAsUndefined: true,
   runtimeEnv: {
+    DATABASE_URL: process.env.DATABASE_URL,
     DEBUG_MESSAGE: process.env.DEBUG_MESSAGE,
+    DIRECT_URL: process.env.DIRECT_URL,
     NODE_ENV: process.env.NODE_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   server: {
+    DATABASE_URL: z.string().min(1),
     DEBUG_MESSAGE: z.string(),
+    DIRECT_URL: z.string().min(1),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
