@@ -9,7 +9,7 @@ on:
       - "README.md"
 
 env:
-  NODE_VERSION: "20.11.1"
+  NODE_VERSION: "20.18.0"
 
 permissions:
   contents: read
@@ -40,6 +40,10 @@ jobs:
         run: |
           vercel env rm DEBUG_MESSAGE preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
           echo "${{ secrets.PREVIEW_DEBUG_MESSAGE }}" | vercel env add DEBUG_MESSAGE preview --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm DATABASE_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.DATABASE_URL }}" | vercel env add DATABASE_URL preview --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm DIRECT_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.DIRECT_URL }}" | vercel env add DIRECT_URL preview --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -58,6 +62,8 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
@@ -65,3 +71,5 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
