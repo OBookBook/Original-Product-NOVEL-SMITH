@@ -26,6 +26,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
+    "@next-auth/prisma-adapter": "^1.0.7",
     "@tailwindcss/postcss": "^4",
     "@types/eslint-plugin-security": "^3.0.0",
     "@types/node": "^20",
