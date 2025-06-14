@@ -3,20 +3,24 @@ import { z } from "zod";
 
 export const env = createEnv({
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_API_URL: z.string().min(1),
   },
   emptyStringAsUndefined: true,
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     DEBUG_MESSAGE: process.env.DEBUG_MESSAGE,
     DIRECT_URL: process.env.DIRECT_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NODE_ENV: process.env.NODE_ENV,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   server: {
     DATABASE_URL: z.string().min(1),
     DEBUG_MESSAGE: z.string(),
     DIRECT_URL: z.string().min(1),
+    NEXTAUTH_SECRET: z.string().min(1),
+    NEXTAUTH_URL: z.string().min(1),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
