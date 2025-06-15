@@ -44,6 +44,12 @@ jobs:
           echo "${{ secrets.DATABASE_URL }}" | vercel env add DATABASE_URL preview --token=${{ secrets.VERCEL_TOKEN }}
           vercel env rm DIRECT_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
           echo "${{ secrets.DIRECT_URL }}" | vercel env add DIRECT_URL preview --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm NEXTAUTH_SECRET preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.NEXTAUTH_SECRET }}" | vercel env add NEXTAUTH_SECRET preview --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm NEXTAUTH_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.NEXTAUTH_URL }}" | vercel env add NEXTAUTH_URL preview --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm NEXT_PUBLIC_API_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.NEXT_PUBLIC_API_URL }}" | vercel env add NEXT_PUBLIC_API_URL preview --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -64,6 +70,9 @@ jobs:
           DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
@@ -73,3 +82,6 @@ jobs:
           DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
