@@ -8,6 +8,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import prisma from "./prisma";
+import { env } from "@/env";
 
 async function findUserByEmail(email: string) {
   const user = await prisma.user.findUnique({
@@ -70,6 +71,7 @@ export const authOptions: NextAuthOptions = {
       name: "credentials",
     }),
   ],
+  secret: env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },

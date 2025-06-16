@@ -37,5 +37,19 @@
   "search.exclude": {
     "**/node_modules": true
   },
-  "todo-tree.general.tags": ["todo", "TODO", "Todo"]
+  "todo-tree.general.tags": ["todo", "TODO", "Todo"],
+  "yaml.validate": true,
+  "yaml.completion": true,
+  "yaml.hover": true,
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "yaml.customTags": ["!reference sequence"],
+  "files.associations": {
+    "*.yml": "yaml",
+    "*.yaml": "yaml"
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.{yml,yaml}"
+  }
 }
