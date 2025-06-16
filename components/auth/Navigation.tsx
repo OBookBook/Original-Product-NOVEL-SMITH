@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { type Session } from "next-auth";
+import { Button } from "@/components/ui/button";
+import UserNavigation from "@/components/auth/UserNavigation";
 
 interface NavigationProps {
   user: null | Session | undefined;
@@ -14,6 +16,19 @@ const Navigation = ({ user }: NavigationProps) => {
         <Link className="cursor-pointer text-xl font-bold" href="/">
           Novel Smith
         </Link>
+
+        {user ? (
+          <UserNavigation user={user} />
+        ) : (
+          <div className="flex items-center space-x-1">
+            <Button asChild className="font-bold" variant="ghost">
+              <Link href="/login">ログイン</Link>
+            </Button>
+            <Button asChild className="font-bold" variant="default">
+              <Link href="/signup">新規登録</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </header>
   );
