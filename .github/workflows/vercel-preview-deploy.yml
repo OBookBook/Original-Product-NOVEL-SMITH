@@ -50,6 +50,10 @@ jobs:
           echo "${{ secrets.NEXTAUTH_URL }}" | vercel env add NEXTAUTH_URL preview --token=${{ secrets.VERCEL_TOKEN }}
           vercel env rm NEXT_PUBLIC_API_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
           echo "${{ secrets.NEXT_PUBLIC_API_URL }}" | vercel env add NEXT_PUBLIC_API_URL preview --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm GOOGLE_CLIENT_ID preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.GOOGLE_CLIENT_ID }}" | vercel env add GOOGLE_CLIENT_ID preview --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm GOOGLE_CLIENT_SECRET preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" | vercel env add GOOGLE_CLIENT_SECRET preview --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -73,6 +77,8 @@ jobs:
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
@@ -85,3 +91,5 @@ jobs:
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
