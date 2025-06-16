@@ -35,13 +35,13 @@ function validateCredentials(credentials: Record<string, unknown> | undefined) {
 async function validateSessionAndUser(session: Session | undefined) {
   if (!session?.user?.email) return;
 
-  await prisma.user.findUniqueOrThrow({
+  const user = await prisma.user.findUnique({
     where: {
       email: session.user.email,
     },
   });
 
-  return session;
+  return user;
 }
 
 async function verifyPassword(password: string, hashedPassword: string) {

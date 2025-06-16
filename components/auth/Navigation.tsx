@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { type Session } from "next-auth";
 import { Button } from "@/components/ui/button";
 import UserNavigation from "@/components/auth/UserNavigation";
+import { type User } from "@prisma/client";
 
 interface NavigationProps {
-  user: null | Session | undefined;
+  user: undefined | User;
 }
 
 const Navigation = ({ user }: NavigationProps) => {
