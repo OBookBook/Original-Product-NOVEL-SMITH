@@ -7,6 +7,9 @@ export const env = createEnv({
   },
   emptyStringAsUndefined: true,
   runtimeEnv: {
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
     DATABASE_URL: process.env.DATABASE_URL,
     DEBUG_MESSAGE: process.env.DEBUG_MESSAGE,
     DIRECT_URL: process.env.DIRECT_URL,
@@ -18,6 +21,9 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
   },
   server: {
+    CLOUDINARY_API_KEY: z.string().min(1),
+    CLOUDINARY_API_SECRET: z.string().min(1),
+    CLOUDINARY_CLOUD_NAME: z.string().min(1),
     DATABASE_URL: z.string().min(1),
     DEBUG_MESSAGE: z.string(),
     DIRECT_URL: z.string().min(1),

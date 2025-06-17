@@ -15,7 +15,7 @@ const TrpcProvider = ({ children }: TrpcProviderProps) => {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: "api/trpc",
+          url: "/api/trpc",
         }),
       ],
     }),

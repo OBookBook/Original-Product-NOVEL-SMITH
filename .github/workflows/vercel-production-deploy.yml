@@ -59,6 +59,12 @@ jobs:
           echo "${{ secrets.GOOGLE_CLIENT_ID }}" | vercel env add GOOGLE_CLIENT_ID production --token=${{ secrets.VERCEL_TOKEN }}
           vercel env rm GOOGLE_CLIENT_SECRET production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
           echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" | vercel env add GOOGLE_CLIENT_SECRET production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm CLOUDINARY_API_KEY production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.CLOUDINARY_API_KEY }}" | vercel env add CLOUDINARY_API_KEY production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm CLOUDINARY_API_SECRET production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.CLOUDINARY_API_SECRET }}" | vercel env add CLOUDINARY_API_SECRET production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm CLOUDINARY_CLOUD_NAME production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.CLOUDINARY_CLOUD_NAME }}" | vercel env add CLOUDINARY_CLOUD_NAME production --token=${{ secrets.VERCEL_TOKEN }}
 
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -85,6 +91,9 @@ jobs:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
@@ -99,3 +108,6 @@ jobs:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
