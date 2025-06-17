@@ -52,9 +52,22 @@ jobs:
           vercel env rm NEXTAUTH_SECRET production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
           echo "${{ secrets.NEXTAUTH_SECRET }}" | vercel env add NEXTAUTH_SECRET production --token=${{ secrets.VERCEL_TOKEN }}
           vercel env rm NEXTAUTH_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
-          echo "${{ secrets.NEXTAUTH_URL }}" | vercel env add NEXTAUTH_URL production --token=${{ secrets.VERCEL_TOKEN }}
-          vercel env rm NEXT_PUBLIC_API_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
-          echo "${{ secrets.NEXT_PUBLIC_API_URL }}" | vercel env add NEXT_PUBLIC_API_URL production --token=${{ secrets.VERCEL_TOKEN }}
+          echo "${{ secrets.NEXTAUTH_URL_PRODUCTION }}" | vercel env add NEXTAUTH_URL production --token=${{ secrets.VERCEL_TOKEN }}
+
+          vercel env rm GOOGLE_CLIENT_ID production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.GOOGLE_CLIENT_ID }}" | vercel env add GOOGLE_CLIENT_ID production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm GOOGLE_CLIENT_SECRET production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" | vercel env add GOOGLE_CLIENT_SECRET production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm CLOUDINARY_API_KEY production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.CLOUDINARY_API_KEY }}" | vercel env add CLOUDINARY_API_KEY production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm CLOUDINARY_API_SECRET production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.CLOUDINARY_API_SECRET }}" | vercel env add CLOUDINARY_API_SECRET production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm CLOUDINARY_CLOUD_NAME production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.CLOUDINARY_CLOUD_NAME }}" | vercel env add CLOUDINARY_CLOUD_NAME production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm EMAIL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.EMAIL }}" | vercel env add EMAIL production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm EMAIL_PASSWORD production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.EMAIL_PASSWORD }}" | vercel env add EMAIL_PASSWORD production --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -76,8 +89,14 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL_PRODUCTION }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          EMAIL: ${{ secrets.EMAIL }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
@@ -88,5 +107,11 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL_PRODUCTION }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          EMAIL: ${{ secrets.EMAIL }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}

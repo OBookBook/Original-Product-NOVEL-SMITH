@@ -2,7 +2,9 @@ import type { NextConfig } from "next";
 import "./env";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    domains: ["lh3.googleusercontent.com", "res.cloudinary.com"],
+  },
 };
 
 export default nextConfig;
