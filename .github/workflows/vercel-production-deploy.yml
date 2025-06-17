@@ -65,7 +65,10 @@ jobs:
           echo "${{ secrets.CLOUDINARY_API_SECRET }}" | vercel env add CLOUDINARY_API_SECRET production --token=${{ secrets.VERCEL_TOKEN }}
           vercel env rm CLOUDINARY_CLOUD_NAME production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
           echo "${{ secrets.CLOUDINARY_CLOUD_NAME }}" | vercel env add CLOUDINARY_CLOUD_NAME production --token=${{ secrets.VERCEL_TOKEN }}
-
+          vercel env rm EMAIL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.EMAIL }}" | vercel env add EMAIL production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm EMAIL_PASSWORD production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.EMAIL_PASSWORD }}" | vercel env add EMAIL_PASSWORD production --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -94,6 +97,8 @@ jobs:
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          EMAIL: ${{ secrets.EMAIL }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
@@ -111,3 +116,5 @@ jobs:
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          EMAIL: ${{ secrets.EMAIL }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
