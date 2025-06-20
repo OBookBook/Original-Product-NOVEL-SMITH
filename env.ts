@@ -18,6 +18,7 @@ export const env = createEnv({
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NODE_ENV: process.env.NODE_ENV,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
   server: {
     CLOUDINARY_API_KEY: z.string().min(1),
@@ -35,6 +36,7 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    OPENAI_API_KEY: z.string().min(1),
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 });
