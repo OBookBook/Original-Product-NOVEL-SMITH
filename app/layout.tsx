@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { M_PLUS_Rounded_1c } from "next/font/google";
 import "../styles/globals.css";
 import { getAuthSession } from "@/lib/nextauth";
 import Providers from "@/components/Providers";
 import Navigation from "@/components/auth/Navigation";
 
-const geistSans = Geist({
+const mPlusRounded = M_PLUS_Rounded_1c({
+  display: "swap",
   subsets: ["latin"],
-  variable: "--font-geist-sans",
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
+  variable: "--font-mplus-rounded",
+  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -29,9 +26,7 @@ export default async function RootLayout({
 
   return (
     <html lang="ja">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${mPlusRounded.variable} font-sans antialiased`}>
         <div className="flex min-h-screen flex-col">
           <Providers>
             <Navigation user={user} />
