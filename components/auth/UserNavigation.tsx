@@ -11,6 +11,7 @@ import {
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
+import { BookOpen, Bot, Settings } from "lucide-react";
 
 interface UserNavigationProps {
   user: User;
@@ -20,7 +21,7 @@ const UserNavigation = ({ user }: UserNavigationProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <div className="relative w-10 h-10 flex-shrink-0">
+        <div className="relative w-10 h-10 flex-shrink-0 cursor-pointer">
           <Image
             alt={user.name ?? "avatar"}
             className="rounded-full object-cover"
@@ -39,8 +40,25 @@ const UserNavigation = ({ user }: UserNavigationProps) => {
 
         <DropdownMenuSeparator />
 
+        <Link href="/ai-create">
+          <DropdownMenuItem className="cursor-pointer">
+            <Bot className="mr-2 h-4 w-4" />
+            AI絵本作成
+          </DropdownMenuItem>
+        </Link>
+
+        <Link href="/storybook">
+          <DropdownMenuItem className="cursor-pointer">
+            <BookOpen className="mr-2 h-4 w-4" />
+            ストーリーブック
+          </DropdownMenuItem>
+        </Link>
+
+        <DropdownMenuSeparator />
+
         <Link href="/settings/profile">
           <DropdownMenuItem className="cursor-pointer">
+            <Settings className="mr-2 h-4 w-4" />
             アカウント設定
           </DropdownMenuItem>
         </Link>
