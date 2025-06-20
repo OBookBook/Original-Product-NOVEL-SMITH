@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-// @ts-expect-error - Radix UI types may not be fully compatible
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 
