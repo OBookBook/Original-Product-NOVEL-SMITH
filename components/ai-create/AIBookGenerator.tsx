@@ -134,7 +134,7 @@ export default function AIBookGenerator() {
 
       // 3秒後にストーリーブックページにリダイレクト
       setTimeout(() => {
-        router.push(`/storybook?bookId=${data.bookId}`);
+        router.push(`/storybook/${data.bookId}`);
       }, 3000);
     },
   });
