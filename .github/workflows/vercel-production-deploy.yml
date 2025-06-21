@@ -53,7 +53,6 @@ jobs:
           echo "${{ secrets.NEXTAUTH_SECRET }}" | vercel env add NEXTAUTH_SECRET production --token=${{ secrets.VERCEL_TOKEN }}
           vercel env rm NEXTAUTH_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
           echo "${{ secrets.NEXTAUTH_URL_PRODUCTION }}" | vercel env add NEXTAUTH_URL production --token=${{ secrets.VERCEL_TOKEN }}
-
           vercel env rm GOOGLE_CLIENT_ID production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
           echo "${{ secrets.GOOGLE_CLIENT_ID }}" | vercel env add GOOGLE_CLIENT_ID production --token=${{ secrets.VERCEL_TOKEN }}
           vercel env rm GOOGLE_CLIENT_SECRET production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
@@ -68,6 +67,9 @@ jobs:
           echo "${{ secrets.EMAIL }}" | vercel env add EMAIL production --token=${{ secrets.VERCEL_TOKEN }}
           vercel env rm EMAIL_PASSWORD production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
           echo "${{ secrets.EMAIL_PASSWORD }}" | vercel env add EMAIL_PASSWORD production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm OPENAI_API_KEY production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.OPENAI_API_KEY }}" | vercel env add OPENAI_API_KEY production --token=${{ secrets.VERCEL_TOKEN }}
+
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -97,6 +99,7 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           EMAIL: ${{ secrets.EMAIL }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
@@ -115,3 +118,4 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           EMAIL: ${{ secrets.EMAIL }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
