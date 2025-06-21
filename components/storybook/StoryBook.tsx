@@ -6,15 +6,88 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { storyPages } from "./storyData";
+import { trpc } from "@/trpc/react";
+import Image from "next/image";
 
-export default function StoryBook() {
+interface StoryBookProps {
+  bookId?: string;
+}
+
+export default function StoryBook({ bookId }: StoryBookProps = {}) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showNavButtons, setShowNavButtons] = useState(false);
 
+  // tRPCでbook データを取得 - bookIdがない場合は最新の本を取得
+  const {
+    data: bookData,
+    error,
+    isLoading,
+  } = trpc.story.getBook.useQuery(
+    { bookId: bookId ?? undefined },
+    { enabled: true },
+  );
+
+  // React Hooksは常に呼び出されるようにする
+  useEffect(() => {
+    if (isAnimating) {
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnimating]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-neutral-50 font-sans flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-600 mx-auto mb-4"></div>
+          <p className="text-neutral-600">絵本を読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-neutral-50 font-sans flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-neutral-600 mb-4">
+            絵本の読み込みに失敗しました。
+          </p>
+          <Button onClick={() => globalThis.location.reload()}>
+            <RotateCcw className="h-4 w-4 mr-2" />
+            再読み込み
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const pages = bookData?.pages.map((page) => ({
+    illustration: page.imageUrl ? `🖼️` : "📖",
+    pageNumber: page.pageNumber,
+    text: page.content,
+    title: page.title,
+  }));
+
+  const bookTitle = bookData?.title;
+  const bookSubtitle = bookData?.subtitle;
+
+  // 現在のページデータを安全に取得
+  const getCurrentPage = (index: number) => {
+    if (index >= 0 && index < (pages?.length ?? 0)) {
+      return pages?.at(index);
+    }
+    return;
+  };
+
+  const currentPageData = getCurrentPage(currentPage);
+  const currentBookPage = bookData?.pages.at(currentPage);
+
   const nextPage = () => {
-    if (currentPage < storyPages.length - 1 && !isAnimating) {
+    if (currentPage < (pages?.length ?? 0) - 1 && !isAnimating) {
       setIsAnimating(true);
       setCurrentPage(currentPage + 1);
     }
@@ -41,35 +114,25 @@ export default function StoryBook() {
     }
   };
 
-  // アニメーション効果のリセット
-  useEffect(() => {
-    if (isAnimating) {
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-      }, 400);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnimating]);
-
-  const progress = ((currentPage + 1) / storyPages.length) * 100;
+  const progress = ((currentPage + 1) / (pages?.length ?? 0)) * 100;
 
   return (
-    <div className="min-h-screen bg-neutral-50 py-8 font-sans">
+    <div className="min-h-screen bg-neutral-50 font-sans">
       <div className="mx-auto max-w-4xl px-6">
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="mb-4 text-3xl md:text-4xl font-medium text-neutral-800 tracking-wide leading-tight">
-            小さな少年とAIロボットの冒険
+            {bookTitle}
           </h1>
           <p className="text-lg text-neutral-600 font-normal leading-relaxed">
-            森の中の不思議な旅
+            {bookSubtitle}
           </p>
 
           {/* Progress */}
           <div className="mt-5 mx-auto max-w-md">
             <div className="flex justify-between items-center mb-3">
               <span className="text-sm font-medium text-neutral-600">
-                {currentPage + 1} / {storyPages.length}
+                {currentPage + 1} / {pages?.length ?? 0}
               </span>
               <span className="text-sm font-medium text-neutral-600">
                 {Math.round(progress)}%
@@ -89,8 +152,8 @@ export default function StoryBook() {
             >
               <div className="flex flex-col min-h-[650px]">
                 {/* Content Section - 上部 */}
-                <div className="flex-1 p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-white">
-                  <div className="max-w-2xl mx-auto space-y-8 text-center">
+                <div className="flex-1 p-4 md:p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white">
+                  <div className="max-w-2xl mx-auto space-y-4 md:space-y-6 lg:space-y-8 text-center">
                     {/* Chapter Number */}
                     <div>
                       <span className="text-sm font-semibold text-neutral-500 tracking-[0.2em] uppercase">
@@ -100,16 +163,16 @@ export default function StoryBook() {
 
                     {/* Title */}
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-800 leading-tight tracking-wide">
-                      {storyPages[currentPage]?.title ?? ""}
+                      {currentPageData?.title ?? ""}
                     </h2>
 
                     <Separator className="mx-auto w-16 bg-neutral-300" />
                   </div>
                 </div>
 
-                {/* Illustration Section with Navigation - 中央 */}
+                {/* Image Section with Navigation - 中央 */}
                 <div
-                  className="relative bg-gradient-to-br from-neutral-100 to-neutral-200 flex items-center justify-center py-12 px-8"
+                  className="relative bg-gradient-to-br from-neutral-100 to-neutral-200 flex items-center justify-center "
                   onMouseEnter={() => setShowNavButtons(true)}
                   onMouseLeave={() => setShowNavButtons(false)}
                 >
@@ -121,9 +184,7 @@ export default function StoryBook() {
                         active:scale-110 active:shadow-lg
                         transition-all duration-300 ease-out
                         group
-                        ${/* SP: 常に表示 */ ""}
                         opacity-100 translate-x-0
-                        ${/* PC: ホバーで表示 */ ""}
                         md:opacity-0 md:-translate-x-4
                         ${showNavButtons ? "md:opacity-100 md:translate-x-0" : ""}
                         ${currentPage === 0 ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
@@ -141,12 +202,23 @@ export default function StoryBook() {
                   </div>
 
                   {/* Image */}
-                  <div className="text-center">
-                    <div className="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 bg-white rounded-full shadow-inner flex items-center justify-center border border-neutral-300 mx-auto">
-                      <div className="text-6xl md:text-7xl lg:text-8xl opacity-80">
-                        {storyPages[currentPage]?.illustration ?? ""}
+                  <div className="w-full h-80 md:h-96 lg:h-[500px] relative">
+                    {currentBookPage?.imageUrl ? (
+                      <Image
+                        alt={currentPageData?.title ?? ""}
+                        className="object-cover"
+                        fill
+                        priority={currentPage === 0}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
+                        src={currentBookPage.imageUrl}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-neutral-100 to-neutral-200 flex items-center justify-center">
+                        <div className="text-6xl md:text-7xl lg:text-8xl opacity-80">
+                          {currentPageData?.illustration ?? ""}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   {/* Right Navigation Button */}
@@ -157,14 +229,12 @@ export default function StoryBook() {
                         active:scale-110 active:shadow-lg
                         transition-all duration-300 ease-out
                         group
-                        ${/* SP: 常に表示 */ ""}
                         opacity-100 translate-x-0
-                        ${/* PC: ホバーで表示 */ ""}
                         md:opacity-0 md:translate-x-4
                         ${showNavButtons ? "md:opacity-100 md:translate-x-0" : ""}
-                        ${currentPage === storyPages.length - 1 ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
+                        ${currentPage === (pages?.length ?? 0) - 1 ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
                       disabled={
-                        currentPage === storyPages.length - 1 || isAnimating
+                        currentPage === (pages?.length ?? 0) - 1 || isAnimating
                       }
                       onClick={nextPage}
                       size="lg"
@@ -190,7 +260,7 @@ export default function StoryBook() {
                       aria-label="次のページ"
                       className="flex-1 opacity-0 cursor-pointer"
                       disabled={
-                        currentPage === storyPages.length - 1 || isAnimating
+                        currentPage === (pages?.length ?? 0) - 1 || isAnimating
                       }
                       onClick={nextPage}
                     />
@@ -198,14 +268,14 @@ export default function StoryBook() {
                 </div>
 
                 {/* Story Text Section - 下部 */}
-                <div className="flex-1 p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-white">
+                <div className="flex-1 p-4 md:p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white">
                   <div className="max-w-2xl mx-auto">
                     <div className="prose prose-neutral max-w-none">
                       <p
-                        className="text-lg md:text-xl leading-relaxed text-neutral-700 font-normal tracking-wide text-left"
+                        className="text-base md:text-lg leading-relaxed text-neutral-700 font-normal max-w-2xl mx-auto"
                         style={{ letterSpacing: "0.02em", lineHeight: "1.8" }}
                       >
-                        {storyPages[currentPage]?.text ?? ""}
+                        {currentPageData?.text ?? ""}
                       </p>
                     </div>
                   </div>
@@ -220,7 +290,7 @@ export default function StoryBook() {
           {/* Page Navigation */}
           <div className="flex items-center justify-center">
             <div className="flex gap-2">
-              {storyPages.map((_, index) => (
+              {pages?.map((_, index) => (
                 <button
                   className={`w-2 h-2 rounded-full transition-all duration-200 ${
                     index === currentPage

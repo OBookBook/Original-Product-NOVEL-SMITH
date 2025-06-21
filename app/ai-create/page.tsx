@@ -1,9 +1,10 @@
 import AIBookGenerator from "@/components/ai-create/AIBookGenerator";
+import { getAuthSession } from "@/lib/nextauth";
+import { redirect } from "next/navigation";
 
-export default function AICreatePage() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
-      <AIBookGenerator />
-    </div>
-  );
+export default async function AICreatePage() {
+  const user = await getAuthSession();
+  if (!user) redirect("/login");
+
+  return <AIBookGenerator />;
 }

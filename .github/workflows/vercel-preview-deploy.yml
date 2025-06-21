@@ -62,6 +62,9 @@ jobs:
           echo "${{ secrets.EMAIL }}" | vercel env add EMAIL preview --token=${{ secrets.VERCEL_TOKEN }}
           vercel env rm EMAIL_PASSWORD preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
           echo "${{ secrets.EMAIL_PASSWORD }}" | vercel env add EMAIL_PASSWORD preview --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm OPENAI_API_KEY preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo "${{ secrets.OPENAI_API_KEY }}" | vercel env add OPENAI_API_KEY preview --token=${{ secrets.VERCEL_TOKEN }}
+
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -91,6 +94,7 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           EMAIL: ${{ secrets.EMAIL }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
@@ -109,3 +113,4 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           EMAIL: ${{ secrets.EMAIL }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

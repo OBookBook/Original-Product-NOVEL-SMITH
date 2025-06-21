@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Bot,
   CheckCircle,
@@ -14,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -23,16 +25,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { trpc } from "@/trpc/react";
+import { useRouter } from "next/navigation";
+
+const storyPromptSchema = z.object({
+  prompt: z.string().min(1, "プロンプトを入力してください").trim(),
+});
+
+type StoryPromptForm = z.infer<typeof storyPromptSchema>;
 
 export default function AIBookGenerator() {
-  const [prompt, setPrompt] = useState("");
-  const [customizations, setCustomizations] = useState({
-    pageCount: "8-12ページ",
-    style: "冒険・友情",
-    targetAge: "5-8歳",
-    tone: "心温まる",
-  });
-
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [isExampleDialogOpen, setIsExampleDialogOpen] = useState(false);
@@ -46,6 +48,21 @@ export default function AIBookGenerator() {
     show: false,
     title: "",
     type: "success",
+  });
+
+  const router = useRouter();
+
+  const {
+    formState: { isValid },
+    handleSubmit,
+    register,
+    setValue,
+  } = useForm<StoryPromptForm>({
+    defaultValues: {
+      prompt: "",
+    },
+    mode: "onChange",
+    resolver: zodResolver(storyPromptSchema),
   });
 
   const examplePrompts = [
@@ -91,57 +108,72 @@ export default function AIBookGenerator() {
     },
   ];
 
-  const generateStory = async () => {
-    if (!prompt.trim()) return;
-
-    setIsGenerating(true);
-    setGenerationProgress(0);
-    setAlertState({ message: "", show: false, title: "", type: "success" });
-
-    try {
-      // ストーリー構造生成のシミュレーション
-      setGenerationProgress(20);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // 物語執筆のシミュレーション
-      setGenerationProgress(60);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // イラスト生成のシミュレーション
-      setGenerationProgress(100);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // TODO: 実際のOpenAI API呼び出しをここに実装
-      setAlertState({
-        message:
-          "AI絵本の生成が正常に完了しました。素晴らしい物語とイラストが完成しました！",
-        show: true,
-        title: "生成完了！",
-        type: "success",
-      });
-    } catch (error) {
+  const generateBookMutation = trpc.story.generateBook.useMutation({
+    onError: (error) => {
       console.error("Generation error:", error);
       setAlertState({
         message:
+          error.message ??
           "生成中に問題が発生しました。しばらく待ってから再度お試しください。",
         show: true,
         title: "エラーが発生しました",
         type: "error",
       });
-    } finally {
       setIsGenerating(false);
       setGenerationProgress(0);
+    },
+    onSuccess: (data) => {
+      setAlertState({
+        message: `AI絵本「${data.book?.title ?? "無題の絵本"}」の生成が正常に完了しました。`,
+        show: true,
+        title: "生成完了！",
+        type: "success",
+      });
+      setIsGenerating(false);
+      setGenerationProgress(0);
+
+      // 3秒後にストーリーブックページにリダイレクト
+      setTimeout(() => {
+        router.push(`/storybook?bookId=${data.bookId}`);
+      }, 3000);
+    },
+  });
+
+  const onSubmit = async (data: StoryPromptForm) => {
+    setIsGenerating(true);
+    setGenerationProgress(0);
+    setAlertState({ message: "", show: false, title: "", type: "success" });
+
+    try {
+      const progressInterval = setInterval(() => {
+        setGenerationProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 1000);
+
+      await generateBookMutation.mutateAsync({
+        prompt: data.prompt,
+      });
+
+      clearInterval(progressInterval);
+      setGenerationProgress(100);
+    } catch (error) {
+      console.error("Generation error:", error);
     }
   };
 
   const handleExampleSelect = (selectedPrompt: string) => {
-    setPrompt(selectedPrompt);
+    setValue("prompt", selectedPrompt, { shouldValidate: true });
     setIsExampleDialogOpen(false);
   };
 
   if (isGenerating) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="bg-gray-50 flex items-center justify-center p-6">
         <div className="w-full max-w-lg">
           <Card className="border-gray-200 shadow-lg">
             <CardContent className="p-10 text-center space-y-8">
@@ -203,10 +235,9 @@ export default function AIBookGenerator() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100">
-      <section className="py-8">
+    <div className="bg-gradient-to-b from-gray-50 via-white to-gray-100">
+      <section className="py-10">
         <div className="max-w-6xl mx-auto px-6">
-          {/* Section Header - page.tsxと同じスタイル */}
           <div className="mb-12">
             {/* ページタイトルと戻るボタン */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
@@ -254,151 +285,97 @@ export default function AIBookGenerator() {
 
               {/* Input Form */}
               <Card className="border-gray-200 shadow-lg">
-                {/* <CardHeader className="pb-6">
-                  <CardTitle className="flex items-center gap-3 text-2xl text-gray-900">
-                    <Wand2 className="h-6 w-6 text-gray-600" />
-                    絵本のアイデアを入力
-                  </CardTitle>
-                </CardHeader> */}
                 <CardContent className="space-y-8">
-                  <div className="space-y-3">
-                    <Label
-                      className="text-gray-700 font-medium"
-                      htmlFor="prompt"
+                  <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <Label
+                          className="text-gray-700 font-medium"
+                          htmlFor="prompt"
+                        >
+                          物語のプロンプト
+                        </Label>
+                        <Dialog
+                          onOpenChange={setIsExampleDialogOpen}
+                          open={isExampleDialogOpen}
+                        >
+                          <DialogTrigger asChild>
+                            <Button
+                              className="flex items-center gap-1 text-xs sm:text-sm shrink-0"
+                              size="sm"
+                              type="button"
+                              variant="outline"
+                            >
+                              <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span className="hidden sm:inline">
+                                プロンプト例を見る
+                              </span>
+                              <span className="sm:hidden">例を見る</span>
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle className="text-2xl font-bold text-gray-900 mb-2">
+                                プロンプト例集
+                              </DialogTitle>
+                              <p className="text-gray-600">
+                                クリックして選択できます。参考にして独自のアイデアを作ってみてください。
+                              </p>
+                            </DialogHeader>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                              {examplePrompts.map((example, index) => (
+                                <Card
+                                  className="cursor-pointer border-2 border-gray-200 hover:border-gray-400 hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
+                                  key={index}
+                                  onClick={() =>
+                                    handleExampleSelect(example.prompt)
+                                  }
+                                >
+                                  <CardHeader className="pb-3">
+                                    <CardTitle className="text-lg font-semibold text-gray-900">
+                                      {example.title}
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="space-y-3">
+                                    <p className="text-gray-700 font-medium leading-relaxed">
+                                      &ldquo;{example.prompt}&rdquo;
+                                    </p>
+                                    <p className="text-sm text-gray-500 leading-relaxed">
+                                      {example.description}
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                      <Textarea
+                        {...register("prompt")}
+                        className="resize-none border-gray-300 focus:border-gray-500 rounded-lg p-4 min-h-[120px]"
+                        id="prompt"
+                        placeholder="例: 小さな少年とAIロボットが森の中を冒険する物語"
+                        rows={5}
+                      />
+                    </div>
+                    <Button
+                      className="w-full h-14 text-lg bg-gray-900 hover:bg-gray-800 text-white font-medium transition-all duration-200"
+                      disabled={!isValid || isGenerating}
+                      type="submit"
                     >
-                      物語のプロンプト
-                    </Label>
-                    <Textarea
-                      className="resize-none border-gray-300 focus:border-gray-500 rounded-lg p-4 min-h-[120px]"
-                      id="prompt"
-                      onChange={(e) => setPrompt(e.target.value)}
-                      placeholder="例：小さな少年とAIロボットが森の中を冒険する物語"
-                      rows={5}
-                      value={prompt}
-                    />
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-gray-500">
-                        どんな物語を作りたいか、自由に描写してください
-                      </p>
-                      <Dialog
-                        onOpenChange={setIsExampleDialogOpen}
-                        open={isExampleDialogOpen}
-                      >
-                        <DialogTrigger asChild>
-                          <Button
-                            className="flex items-center gap-2"
-                            size="sm"
-                            variant="outline"
-                          >
-                            <HelpCircle className="h-4 w-4" />
-                            プロンプト例を見る
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold text-gray-900 mb-2">
-                              プロンプト例集
-                            </DialogTitle>
-                            <p className="text-gray-600">
-                              クリックして選択できます。参考にして独自のアイデアを作ってみてください。
-                            </p>
-                          </DialogHeader>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                            {examplePrompts.map((example, index) => (
-                              <Card
-                                className="cursor-pointer border-2 border-gray-200 hover:border-gray-400 hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
-                                key={index}
-                                onClick={() =>
-                                  handleExampleSelect(example.prompt)
-                                }
-                              >
-                                <CardHeader className="pb-3">
-                                  <CardTitle className="text-lg font-semibold text-gray-900">
-                                    {example.title}
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                  <p className="text-gray-700 font-medium leading-relaxed">
-                                    &ldquo;{example.prompt}&rdquo;
-                                  </p>
-                                  <p className="text-sm text-gray-500 leading-relaxed">
-                                    {example.description}
-                                  </p>
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  </div>
-
-                  <Separator className="bg-gray-200" />
-
-                  {/* <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <Label className="text-gray-700 font-medium" htmlFor="target-age">
-                        対象年齢
-                      </Label>
-                      <Input
-                        className="border-gray-300 focus:border-gray-500 rounded-lg"
-                        id="target-age"
-                        onChange={(e) => setCustomizations(prev => ({...prev, targetAge: e.target.value}))}
-                        value={customizations.targetAge}
-                      />
-                    </div>
-                    <div className="space-y-3">
-                      <Label className="text-gray-700 font-medium" htmlFor="page-count">
-                        ページ数
-                      </Label>
-                      <Input
-                        className="border-gray-300 focus:border-gray-500 rounded-lg"
-                        id="page-count"
-                        onChange={(e) => setCustomizations(prev => ({...prev, pageCount: e.target.value}))}
-                        value={customizations.pageCount}
-                      />
-                    </div>
-                    <div className="space-y-3">
-                      <Label className="text-gray-700 font-medium" htmlFor="style">
-                        ジャンル
-                      </Label>
-                      <Input
-                        className="border-gray-300 focus:border-gray-500 rounded-lg"
-                        id="style"
-                        onChange={(e) => setCustomizations(prev => ({...prev, style: e.target.value}))}
-                        value={customizations.style}
-                      />
-                    </div>
-                    <div className="space-y-3">
-                      <Label className="text-gray-700 font-medium" htmlFor="tone">
-                        トーン
-                      </Label>
-                      <Input
-                        className="border-gray-300 focus:border-gray-500 rounded-lg"
-                        id="tone"
-                        onChange={(e) => setCustomizations(prev => ({...prev, tone: e.target.value}))}
-                        value={customizations.tone}
-                      />
-                    </div>
-                  </div> */}
-
-                  <Button
-                    className="w-full h-14 text-lg bg-gray-900 hover:bg-gray-800 text-white font-medium transition-all duration-200"
-                    disabled={!prompt.trim() || isGenerating}
-                    onClick={generateStory}
-                  >
-                    {isGenerating ? (
-                      <>
-                        <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                        生成中...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="mr-3 h-5 w-5" />
-                        AI絵本を生成する
-                      </>
-                    )}
-                  </Button>
+                      {isGenerating ? (
+                        <>
+                          <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                          生成中...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-3 h-5 w-5" />
+                          AI絵本を生成する
+                        </>
+                      )}
+                    </Button>
+                  </form>
                 </CardContent>
               </Card>
             </div>
