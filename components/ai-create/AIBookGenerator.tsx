@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import toast from "react-hot-toast";
 import {
   Bot,
   CheckCircle,
@@ -138,13 +139,10 @@ export default function AIBookGenerator() {
       setCurrentStep(1);
     },
     onSuccess: (data) => {
-      setCurrentStep(4); // 完了ステップ
-      setAlertState({
-        message: `AI絵本「${data.book?.title ?? "無題の絵本"}」の生成が正常に完了しました。`,
-        show: true,
-        title: "生成完了！",
-        type: "success",
-      });
+      setCurrentStep(4);
+      toast.success(
+        `AI絵本「${data.book?.title ?? "無題の絵本"}」の生成が正常に完了しました！`,
+      );
       setIsGenerating(false);
 
       setTimeout(() => {
@@ -155,16 +153,14 @@ export default function AIBookGenerator() {
 
   const onSubmit = async (data: StoryPromptForm) => {
     if (isGenerating) return;
-
     setIsGenerating(true);
     setCurrentStep(1);
     setAlertState({ message: "", show: false, title: "", type: "success" });
 
     try {
-      // ステップを段階的に進める
       const stepInterval = setInterval(() => {
         setCurrentStep((prev) => {
-          if (prev >= 3) return 3; // ステップ3で止める
+          if (prev >= 3) return 3;
           return prev + 1;
         });
       }, 2000);
@@ -186,7 +182,7 @@ export default function AIBookGenerator() {
 
   if (isGenerating) {
     return (
-      <div className="bg-gray-50 flex items-center justify-center p-6">
+      <div className="flex items-center justify-center p-6">
         <div className="w-full max-w-lg">
           <Card className="border-gray-200 shadow-lg">
             <CardContent className="p-10 text-center space-y-8">
