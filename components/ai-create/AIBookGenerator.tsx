@@ -146,6 +146,8 @@ export default function AIBookGenerator() {
   });
 
   const onSubmit = async (data: StoryPromptForm) => {
+    if (isGenerating) return;
+
     setIsGenerating(true);
     setCurrentStep(1);
     setAlertState({ message: "", show: false, title: "", type: "success" });
