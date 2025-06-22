@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { M_PLUS_Rounded_1c } from "next/font/google";
 import "../styles/globals.css";
-import { getAuthSession } from "@/lib/nextauth";
 import Providers from "@/components/Providers";
 import Navigation from "@/components/auth/Navigation";
 
@@ -22,14 +21,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = (await getAuthSession()) ?? undefined;
-
   return (
     <html lang="ja">
       <body className={`${mPlusRounded.variable} font-sans antialiased`}>
         <div className="flex min-h-screen flex-col">
           <Providers>
-            <Navigation user={user} />
+            <Navigation />
             <main className="container mx-auto max-w-screen-md flex-1 px-2">
               {children}
             </main>

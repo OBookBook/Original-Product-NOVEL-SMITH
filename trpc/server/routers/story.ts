@@ -202,7 +202,7 @@ async function generateAndAttachImage(
 }
 
 /**
- * ストーリーのページを作成し、画像を生成する
+ * ストーリーのページを作成し、画像を生成する（逐次処理）
  * @param bookId - BookのID
  * @param storyData - AIで生成されたストーリーデータ
  * @returns 作成されたページ数
@@ -211,16 +211,21 @@ async function generateStoryPages(
   bookId: string,
   storyData: StoryData,
 ): Promise<number> {
-  if (!storyData.pages || !Array.isArray(storyData.pages)) return 0;
-  const pagePromises = storyData.pages.map(
-    async (pageData, index) =>
-      await createPageWithImage(bookId, pageData, index + 1),
-  );
-  const results = await Promise.allSettled(pagePromises);
+  if (!storyData.pages?.length) return 0;
+  let successCount = 0;
+  for (const [index, pageData] of storyData.pages.entries()) {
+    if (!pageData) continue;
+    try {
+      const result = await createPageWithImage(bookId, pageData, index + 1);
+      if (result) successCount++;
+    } catch (error) {
+      console.error(`Page ${index + 1} creation failed:`, error);
+    }
+    if (index < storyData.pages.length - 1)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
 
-  return results.filter(
-    (result) => result.status === "fulfilled" && result.value !== undefined,
-  ).length;
+  return successCount;
 }
 
 /**

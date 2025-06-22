@@ -32,8 +32,8 @@ const BookshelfShelf = ({
   books: Book[];
 }) => (
   <div className="relative mb-6 sm:mb-8">
-    {/* 本の表紙表示 - PC用3×3レイアウト */}
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
+    {/* 本の表紙表示 - レスポンシブレイアウト */}
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
       {books.map((book, index) => (
         <Link href={`/storybook/${book.id}`} key={book.id}>
           <div
@@ -44,7 +44,7 @@ const BookshelfShelf = ({
             }}
           >
             {/* 本の表紙 */}
-            <div className="relative w-full max-w-28 sm:max-w-32 lg:max-w-40 aspect-[3/4] bg-white rounded-lg border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 sm:hover:-translate-y-4 hover:scale-105 hover:rotate-0">
+            <div className="relative w-full max-w-32 sm:max-w-40 md:max-w-44 lg:max-w-48 aspect-[3/4] bg-white rounded-lg border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 sm:hover:-translate-y-4 hover:scale-105 hover:rotate-0">
               {/* 表紙画像 */}
               {book.coverImage ? (
                 <Image
@@ -141,7 +141,7 @@ export default function BookListClient() {
 
   // レスポンシブ棚分け
   const shelves = React.useMemo(() => {
-    const booksPerShelf = windowWidth >= 1024 ? 9 : 2; // PC: 9冊(3×3), モバイル: 2冊
+    const booksPerShelf = windowWidth >= 768 ? 3 : 2;
     const result = [];
     for (let i = 0; i < books.length; i += booksPerShelf) {
       result.push(books.slice(i, i + booksPerShelf));

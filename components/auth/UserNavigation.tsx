@@ -40,17 +40,17 @@ const UserNavigation = ({ user }: UserNavigationProps) => {
 
         <DropdownMenuSeparator />
 
+        <Link href="/">
+          <DropdownMenuItem className="cursor-pointer">
+            <BookOpen className="mr-2 h-4 w-4" />
+            ストーリーブック
+          </DropdownMenuItem>
+        </Link>
+
         <Link href="/ai-create">
           <DropdownMenuItem className="cursor-pointer">
             <Bot className="mr-2 h-4 w-4" />
             AI絵本作成
-          </DropdownMenuItem>
-        </Link>
-
-        <Link href="/storybook">
-          <DropdownMenuItem className="cursor-pointer">
-            <BookOpen className="mr-2 h-4 w-4" />
-            ストーリーブック
           </DropdownMenuItem>
         </Link>
 

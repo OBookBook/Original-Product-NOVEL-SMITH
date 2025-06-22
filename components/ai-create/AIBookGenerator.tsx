@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import toast from "react-hot-toast";
 import {
   Bot,
   CheckCircle,
@@ -36,7 +37,7 @@ type StoryPromptForm = z.infer<typeof storyPromptSchema>;
 
 export default function AIBookGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generationProgress, setGenerationProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const [isExampleDialogOpen, setIsExampleDialogOpen] = useState(false);
   const [alertState, setAlertState] = useState<{
     message: string;
@@ -67,45 +68,60 @@ export default function AIBookGenerator() {
 
   const examplePrompts = [
     {
-      description: "友情と協力をテーマにしたテクノロジーと自然の融合",
-      prompt: "小さな少年とAIロボットが森の中を冒険する物語",
-      title: "AI友情冒険",
+      description: "乗り物と動物が好きな子供たちのための楽しい冒険物語",
+      prompt:
+        "森に住む可愛いうさぎの家族が、手作りの小さな車に乗って動物の友達を迎えに行く楽しい冒険の物語",
+      title: "うさぎの車の冒険",
     },
     {
-      description: "読書の楽しさと想像力の力を描いた幻想的な物語",
-      prompt: "魔法の本屋で働く猫と、本の世界に迷い込んだ女の子の冒険",
-      title: "魔法図書館",
+      description: "大人気キャラクターが登場する、やさしさを学ぶ物語",
+      prompt:
+        "アンパンマンが困っている動物たちに美味しいパンを配って回り、「ありがとう」の気持ちを伝え合う心温まる物語",
+      title: "アンパンマンの配達",
     },
     {
-      description: "家族の絆と宇宙への憧れを描いたSF冒険",
-      prompt: "宇宙船に乗って星々を旅する兄弟の物語",
-      title: "宇宙兄弟",
+      description: "「ガタンゴトン」の音が楽しい電車の冒険物語",
+      prompt:
+        "色とりどりの電車が「ガタンゴトン」「シュッシュッ」の音を響かせながら、お客さんの動物たちを運ぶ楽しい一日の物語",
+      title: "電車でゴーゴー",
     },
     {
-      description: "時間の大切さと成長をテーマにした魔法的物語",
-      prompt: "時間を操る不思議な時計を見つけた少女の冒険",
-      title: "時間の魔法",
+      description: "働く車と勇気をテーマにした緊急出動の物語",
+      prompt:
+        "赤い消防車が「ウーウー」「カンカン」のサイレンを鳴らしながら、困っている動物たちを助けに行く勇敢な物語",
+      title: "消防車の大活躍",
     },
     {
-      description: "自然との共生と思いやりを学ぶ心温まる物語",
-      prompt: "動物たちと話せるようになった男の子の日常",
-      title: "動物との対話",
+      description: "お買い物と数を覚える楽しい日常物語",
+      prompt:
+        "小さなくまの親子が「いち、に、さん」と数を数えながら、お店で美味しいりんごとバナナを買い物する温かい物語",
+      title: "くまのお買い物",
     },
     {
-      description: "自由と冒険心、そして夢を追いかける勇気の物語",
-      prompt: "空を飛べるようになった少女が雲の上の世界を探検する物語",
-      title: "空飛ぶ少女",
+      description: "動物の鳴き声と色を学ぶカラフルな物語",
+      prompt:
+        "「わんわん」の白い犬、「にゃんにゃん」の黒い猫、「ぶーぶー」のピンクの豚さんが、七色の虹を見つけて一緒に遊ぶ楽しい物語",
+      title: "動物たちの虹さがし",
     },
     {
-      description: "優しさと創造性、そして人を喜ばせる喜びの物語",
-      prompt: "魔法の料理で人々を幸せにする小さなコックの物語",
-      title: "料理の魔法",
+      description: "食べ物と「いただきます」を学ぶ食育物語",
+      prompt:
+        "小さなペンギンの家族が、新鮮なお魚を「いただきます」と言って美味しく食べて、「ごちそうさま」の感謝を伝える食事の物語",
+      title: "ペンギンの食事時間",
     },
     {
-      description: "環境保護と異文化理解をテーマにした海洋冒険",
-      prompt: "人魚の友達と一緒に海底王国を救う少年の冒険",
-      title: "海底王国",
+      description: "お風呂と生活習慣を楽しく学ぶ物語",
+      prompt:
+        "象の赤ちゃんが「ぷくぷく」泡だらけのお風呂で遊んだ後、お母さんと一緒に「おやすみなさい」をする生活リズムの物語",
+      title: "象さんのお風呂タイム",
     },
+  ];
+
+  const steps = [
+    { icon: FileText, id: 1, name: "ストーリー構造の設計" },
+    { icon: Sparkles, id: 2, name: "物語の執筆" },
+    { icon: Bot, id: 3, name: "アートワークの生成" },
+    { icon: CheckCircle, id: 4, name: "完了" },
   ];
 
   const generateBookMutation = trpc.story.generateBook.useMutation({
@@ -120,47 +136,40 @@ export default function AIBookGenerator() {
         type: "error",
       });
       setIsGenerating(false);
-      setGenerationProgress(0);
+      setCurrentStep(1);
     },
     onSuccess: (data) => {
-      setAlertState({
-        message: `AI絵本「${data.book?.title ?? "無題の絵本"}」の生成が正常に完了しました。`,
-        show: true,
-        title: "生成完了！",
-        type: "success",
-      });
+      setCurrentStep(4);
+      toast.success(
+        `AI絵本「${data.book?.title ?? "無題の絵本"}」の生成が正常に完了しました！`,
+      );
       setIsGenerating(false);
-      setGenerationProgress(0);
 
-      // 3秒後にストーリーブックページにリダイレクト
       setTimeout(() => {
-        router.push(`/storybook?bookId=${data.bookId}`);
-      }, 3000);
+        router.push(`/storybook/${data.bookId}`);
+      }, 2000);
     },
   });
 
   const onSubmit = async (data: StoryPromptForm) => {
+    if (isGenerating) return;
     setIsGenerating(true);
-    setGenerationProgress(0);
+    setCurrentStep(1);
     setAlertState({ message: "", show: false, title: "", type: "success" });
 
     try {
-      const progressInterval = setInterval(() => {
-        setGenerationProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
+      const stepInterval = setInterval(() => {
+        setCurrentStep((prev) => {
+          if (prev >= 3) return 3;
+          return prev + 1;
         });
-      }, 1000);
+      }, 2000);
 
       await generateBookMutation.mutateAsync({
         prompt: data.prompt,
       });
 
-      clearInterval(progressInterval);
-      setGenerationProgress(100);
+      clearInterval(stepInterval);
     } catch (error) {
       console.error("Generation error:", error);
     }
@@ -173,7 +182,7 @@ export default function AIBookGenerator() {
 
   if (isGenerating) {
     return (
-      <div className="bg-gray-50 flex items-center justify-center p-6">
+      <div className="flex items-center justify-center p-6">
         <div className="w-full max-w-lg">
           <Card className="border-gray-200 shadow-lg">
             <CardContent className="p-10 text-center space-y-8">
@@ -196,36 +205,37 @@ export default function AIBookGenerator() {
               </div>
 
               <div className="space-y-4">
-                <div className="w-full bg-gray-200 rounded-full h-1.5">
-                  <div
-                    className="bg-gray-900 h-1.5 rounded-full transition-all duration-1000 ease-out"
-                    style={{ width: `${generationProgress}%` }}
-                  ></div>
-                </div>
-                <p className="text-sm text-gray-500 font-medium">
-                  {generationProgress}% 完了
-                </p>
-              </div>
+                {steps.map((step) => {
+                  const Icon = step.icon;
+                  const isActive = currentStep === step.id;
+                  const isCompleted = currentStep > step.id;
 
-              <div className="space-y-3 text-gray-600">
-                {generationProgress < 20 && (
-                  <div className="flex items-center justify-center gap-3">
-                    <FileText className="h-5 w-5" />
-                    <span>ストーリー構造を設計中</span>
-                  </div>
-                )}
-                {generationProgress >= 20 && generationProgress < 60 && (
-                  <div className="flex items-center justify-center gap-3">
-                    <Sparkles className="h-5 w-5" />
-                    <span>物語を執筆中</span>
-                  </div>
-                )}
-                {generationProgress >= 60 && (
-                  <div className="flex items-center justify-center gap-3">
-                    <Bot className="h-5 w-5" />
-                    <span>アートワークを生成中</span>
-                  </div>
-                )}
+                  return (
+                    <div
+                      className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                        isActive
+                          ? "bg-gray-100 text-gray-900 border-l-4 border-gray-900"
+                          : isCompleted
+                            ? "text-green-600 bg-green-50"
+                            : "text-gray-400"
+                      }`}
+                      key={step.id}
+                    >
+                      <Icon
+                        className={`h-5 w-5 ${isActive ? "text-gray-900" : ""}`}
+                      />
+                      <span className="font-medium text-left flex-1">
+                        {step.name}
+                      </span>
+                      {isActive && (
+                        <Loader2 className="h-4 w-4 animate-spin ml-auto text-gray-900" />
+                      )}
+                      {isCompleted && (
+                        <CheckCircle className="h-4 w-4 ml-auto text-green-600" />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
