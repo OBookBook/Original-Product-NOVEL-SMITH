@@ -1,24 +1,24 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import UserNavigation from "@/components/auth/UserNavigation";
+import { useSession } from "next-auth/react";
 import { type User } from "@prisma/client";
 
-interface NavigationProps {
-  user: undefined | User;
-}
-
-const Navigation = ({ user }: NavigationProps) => {
-  console.log(user);
+const Navigation = () => {
+  const { data: session } = useSession();
+  const user = session?.user;
 
   return (
-    <header className="shadow-lg shadow-gray-100 mb-10">
+    <header className="shadow-lg shadow-100 mb-10">
       <div className="container mx-auto flex max-w-screen-md items-center justify-between px-4 py-4">
         <Link className="cursor-pointer text-xl font-bold" href="/">
           Novel Smith
         </Link>
 
         {user ? (
-          <UserNavigation user={user} />
+          <UserNavigation user={user as User} />
         ) : (
           <div className="flex items-center space-x-1">
             <Button asChild className="font-bold" variant="ghost">
