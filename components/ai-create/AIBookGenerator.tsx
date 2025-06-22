@@ -36,7 +36,7 @@ type StoryPromptForm = z.infer<typeof storyPromptSchema>;
 
 export default function AIBookGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generationProgress, setGenerationProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const [isExampleDialogOpen, setIsExampleDialogOpen] = useState(false);
   const [alertState, setAlertState] = useState<{
     message: string;
@@ -108,6 +108,13 @@ export default function AIBookGenerator() {
     },
   ];
 
+  const steps = [
+    { icon: FileText, id: 1, name: "ストーリー構造の設計" },
+    { icon: Sparkles, id: 2, name: "物語の執筆" },
+    { icon: Bot, id: 3, name: "アートワークの生成" },
+    { icon: CheckCircle, id: 4, name: "完了" },
+  ];
+
   const generateBookMutation = trpc.story.generateBook.useMutation({
     onError: (error) => {
       console.error("Generation error:", error);
@@ -120,9 +127,10 @@ export default function AIBookGenerator() {
         type: "error",
       });
       setIsGenerating(false);
-      setGenerationProgress(0);
+      setCurrentStep(1);
     },
     onSuccess: (data) => {
+      setCurrentStep(4); // 完了ステップ
       setAlertState({
         message: `AI絵本「${data.book?.title ?? "無題の絵本"}」の生成が正常に完了しました。`,
         show: true,
@@ -130,37 +138,32 @@ export default function AIBookGenerator() {
         type: "success",
       });
       setIsGenerating(false);
-      setGenerationProgress(0);
 
-      // 3秒後にストーリーブックページにリダイレクト
       setTimeout(() => {
         router.push(`/storybook/${data.bookId}`);
-      }, 3000);
+      }, 2000);
     },
   });
 
   const onSubmit = async (data: StoryPromptForm) => {
     setIsGenerating(true);
-    setGenerationProgress(0);
+    setCurrentStep(1);
     setAlertState({ message: "", show: false, title: "", type: "success" });
 
     try {
-      const progressInterval = setInterval(() => {
-        setGenerationProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
+      // ステップを段階的に進める
+      const stepInterval = setInterval(() => {
+        setCurrentStep((prev) => {
+          if (prev >= 3) return 3; // ステップ3で止める
+          return prev + 1;
         });
-      }, 1000);
+      }, 2000);
 
       await generateBookMutation.mutateAsync({
         prompt: data.prompt,
       });
 
-      clearInterval(progressInterval);
-      setGenerationProgress(100);
+      clearInterval(stepInterval);
     } catch (error) {
       console.error("Generation error:", error);
     }
@@ -196,36 +199,37 @@ export default function AIBookGenerator() {
               </div>
 
               <div className="space-y-4">
-                <div className="w-full bg-gray-200 rounded-full h-1.5">
-                  <div
-                    className="bg-gray-900 h-1.5 rounded-full transition-all duration-1000 ease-out"
-                    style={{ width: `${generationProgress}%` }}
-                  ></div>
-                </div>
-                <p className="text-sm text-gray-500 font-medium">
-                  {generationProgress}% 完了
-                </p>
-              </div>
+                {steps.map((step) => {
+                  const Icon = step.icon;
+                  const isActive = currentStep === step.id;
+                  const isCompleted = currentStep > step.id;
 
-              <div className="space-y-3 text-gray-600">
-                {generationProgress < 20 && (
-                  <div className="flex items-center justify-center gap-3">
-                    <FileText className="h-5 w-5" />
-                    <span>ストーリー構造を設計中</span>
-                  </div>
-                )}
-                {generationProgress >= 20 && generationProgress < 60 && (
-                  <div className="flex items-center justify-center gap-3">
-                    <Sparkles className="h-5 w-5" />
-                    <span>物語を執筆中</span>
-                  </div>
-                )}
-                {generationProgress >= 60 && (
-                  <div className="flex items-center justify-center gap-3">
-                    <Bot className="h-5 w-5" />
-                    <span>アートワークを生成中</span>
-                  </div>
-                )}
+                  return (
+                    <div
+                      className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                        isActive
+                          ? "bg-gray-100 text-gray-900 border-l-4 border-gray-900"
+                          : isCompleted
+                            ? "text-green-600 bg-green-50"
+                            : "text-gray-400"
+                      }`}
+                      key={step.id}
+                    >
+                      <Icon
+                        className={`h-5 w-5 ${isActive ? "text-gray-900" : ""}`}
+                      />
+                      <span className="font-medium text-left flex-1">
+                        {step.name}
+                      </span>
+                      {isActive && (
+                        <Loader2 className="h-4 w-4 animate-spin ml-auto text-gray-900" />
+                      )}
+                      {isCompleted && (
+                        <CheckCircle className="h-4 w-4 ml-auto text-green-600" />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
