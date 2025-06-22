@@ -202,7 +202,7 @@ export default function StoryBook({ bookId }: StoryBookProps = {}) {
                   </div>
 
                   {/* Image */}
-                  <div className="w-full h-80 md:h-96 lg:h-[500px] relative">
+                  <div className="w-full h-80 md:h-96 lg:h-[700px] relative">
                     {currentBookPage?.imageUrl ? (
                       <Image
                         alt={currentPageData?.title ?? ""}
