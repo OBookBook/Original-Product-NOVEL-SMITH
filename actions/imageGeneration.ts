@@ -104,13 +104,16 @@ async function downloadImageAsArrayBuffer(
 async function generateImageWithDallE(
   imagePrompt: string,
 ): Promise<OpenAI.Images.ImagesResponse> {
+  // 日本の絵本スタイルを強化するプロンプトを作成
+  const enhancedPrompt = `${imagePrompt}, Japanese children's picture book illustration, cute simple characters, soft watercolor painting style, warm gentle colors, hand-drawn artistic style, innocent and heartwarming, traditional Japanese storybook art, simple line art, friendly expressions, pastoral scenery, wholesome family-friendly`;
+
   return await openai.images.generate({
     model: "dall-e-3",
     n: 1,
-    prompt: imagePrompt,
+    prompt: enhancedPrompt,
     quality: "standard",
     size: "1024x1024",
-    style: "vivid",
+    style: "natural",
   });
 }
 

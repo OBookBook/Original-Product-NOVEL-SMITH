@@ -93,26 +93,48 @@ async function callOpenAIForStoryGeneration(
  */
 function createStoryPrompt(prompt: string): string {
   return `
-絵本「${prompt}」を作ってください
+子供向け絵本「${prompt}」を作成してください。
 
-以下のJSON形式で返してください：
+【絵本作成の指針】
+- 対象年齢：3歳
+- 教育的価値がある内容
+- 温かみのある親しみやすい文体
+- 1ページのみの短い構成（開発中のため）
+- シンプルで完結した内容
+- 色鮮やかで魅力的な挿絵を想像できる内容
+
+以下のJSON形式で返してください（必ず1ページのみ作成）：
 {
-  "title": "本のタイトル",
-  "subtitle": "本のサブタイトル",
+  "title": "魅力的で覚えやすい本のタイトル",
+  "subtitle": "本のサブタイトル（任意）",
   "pages": [
     {
-      "title": "ページ1のタイトル",
-      "content": "ページ1の文章内容（100-150文字程度）",
-      "imagePrompt": "そのページの内容に合った画像生成用のプロンプト（英語で詳細に記述）"
-    },
-    {
-      "title": "ページ2のタイトル",
-      "content": "ページ2の文章内容（100-150文字程度）",
-      "imagePrompt": "そのページの内容に合った画像生成用のプロンプト（英語で詳細に記述）"
+      "title": "ページのタイトル",
+      "content": "読み聞かせに適した完結した短い文章（60-100文字程度、ひらがな・カタカナ中心）",
+      "imagePrompt": "Children's picture book illustration, [specific scene description], cute and simple character design, soft watercolor style, warm pastel colors, hand-drawn look, storybook art, whimsical and charming atmosphere, child-friendly"
     }
-    // ... 2ページ程度
   ]
 }
+
+【1ページストーリー構成の例】
+- 主人公の紹介と簡潔な出来事
+- 優しいメッセージや教訓を含む
+- 完結した内容で読み手が満足できる構成
+- 視覚的に魅力的な1つの場面を描写
+
+画像プロンプトには以下の絵本スタイル要素を必ず含めてください：
+- children's picture book illustration (必須)
+- cute and simple character design (シンプルで可愛らしいキャラクター)
+- soft watercolor style または hand-drawn look (水彩画風または手描き風)
+- warm pastel colors (温かいパステルカラー)
+- whimsical and charming atmosphere (幻想的で魅力的な雰囲気)
+- child-friendly (子供向け)
+- storybook art (絵本アート)
+- 具体的な場面描写
+- キャラクターの表情や動作
+- 背景の詳細
+
+※リアルすぎる表現は避け、絵本らしい優しく温かみのあるイラストスタイルを重視してください
 `;
 }
 
