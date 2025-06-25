@@ -51,6 +51,21 @@ async function verifyPassword(password: string, hashedPassword: string) {
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+  callbacks: {
+    async session({ session }) {
+      if (session?.user?.email) {
+        const user = await prisma.user.findUnique({
+          where: { email: session.user.email },
+        });
+        if (user) {
+          session.user.name = user.name;
+          session.user.image = user.image;
+          session.user.email = user.email;
+        }
+      }
+      return session;
+    },
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
