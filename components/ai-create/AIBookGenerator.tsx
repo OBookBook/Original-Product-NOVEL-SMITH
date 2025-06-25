@@ -317,7 +317,7 @@ export default function AIBookGenerator() {
                               variant="outline"
                             >
                               <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                              <span className="hidden sm:inline">
+                              <span className="hidden sm:inline cursor-pointer">
                                 プロンプト例を見る
                               </span>
                               <span className="sm:hidden">例を見る</span>
@@ -369,7 +369,7 @@ export default function AIBookGenerator() {
                       />
                     </div>
                     <Button
-                      className="w-full h-14 text-lg bg-gray-900 hover:bg-gray-800 text-white font-medium transition-all duration-200"
+                      className="w-full h-14 text-lg bg-gray-900 hover:bg-gray-800 text-white font-medium transition-all duration-200 cursor-pointer"
                       disabled={!isValid || isGenerating}
                       type="submit"
                     >
@@ -380,7 +380,7 @@ export default function AIBookGenerator() {
                         </>
                       ) : (
                         <>
-                          <Sparkles className="mr-3 h-5 w-5" />
+                          <Sparkles className="mr-3 h-5 w-5 " />
                           AI絵本を生成する
                         </>
                       )}

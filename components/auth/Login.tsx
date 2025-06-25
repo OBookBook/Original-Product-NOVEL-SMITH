@@ -87,7 +87,11 @@ const Login = () => {
     <div className="max-w-[400px] m-auto">
       <div className="text-2xl font-bold text-center mb-10">ログイン</div>
 
-      <Button className="w-full" onClick={handleGoogleLogin} variant="outline">
+      <Button
+        className="w-full cursor-pointer"
+        onClick={handleGoogleLogin}
+        variant="outline"
+      >
         <FcGoogle className="mr-2 h-4 w-4" />
         Googleアカウント
       </Button>
@@ -130,7 +134,11 @@ const Login = () => {
             )}
           />
 
-          <Button className="w-full" disabled={isLoading} type="submit">
+          <Button
+            className="w-full cursor-pointer"
+            disabled={isLoading}
+            type="submit"
+          >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             ログイン
           </Button>
