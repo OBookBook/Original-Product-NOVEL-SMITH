@@ -83,6 +83,22 @@ export const storyRouter = router({
       return await getLatestBook(userId);
     }),
 
+  getBookById: privateProcedure
+    .input(
+      z.object({
+        bookId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = getValidatedUserId(ctx);
+      return await getBookById(input.bookId, userId);
+    }),
+
+  getLatestBook: privateProcedure.query(async ({ ctx }) => {
+    const userId = getValidatedUserId(ctx);
+    return await getLatestBook(userId);
+  }),
+
   getUserBooks: privateProcedure.query(async ({ ctx }) => {
     return await getUserBooksList(getValidatedUserId(ctx));
   }),
