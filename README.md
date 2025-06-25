@@ -5,7 +5,7 @@
 ## 概要
 
 - ユーザーが簡単なプロンプトを入力することで、AIが自動的に子供向け絵本を生成するWebアプリケーションです
-- 親子の読み聞かせ時間を豊かにするデジタル絵本プラットフォームの提供する
+- 親子の読み聞かせ時間を豊かにするデジタル絵本プラットフォームを提供します
 
 ## 対象ユーザー
 
@@ -53,9 +53,104 @@ Novel Smithは、AIを活用した子供向け絵本生成アプリケーショ�
 - Deployment: Vercel
 - Other: Cursor, npm, Git, GitHub, ESLint, Prettier, Husky/lint-staged, T3 ENV
 
+### データベース設計
+
 ### ER 図
 
 ![ER図](<Document/ER Diagram_v1.0.0.png>)
+
+### テーブル定義
+
+#### Account Table
+
+認証プロバイダーアカウント情報を管理するテーブル
+
+| カラム名          | データ型 | 制約                 | 説明                         |
+| ----------------- | -------- | -------------------- | ---------------------------- |
+| id                | String   | @id @default(cuid()) | プライマリキー               |
+| userId            | String   | -                    | ユーザーID（外部キー）       |
+| type              | String   | -                    | アカウントタイプ             |
+| provider          | String   | -                    | 認証プロバイダー名           |
+| providerAccountId | String   | -                    | プロバイダー側のアカウントID |
+| refresh_token     | String?  | @db.Text             | リフレッシュトークン         |
+| access_token      | String?  | @db.Text             | アクセストークン             |
+| expires_at        | Int?     | -                    | トークン有効期限             |
+| token_type        | String?  | -                    | トークンタイプ               |
+| scope             | String?  | -                    | スコープ                     |
+| id_token          | String?  | @db.Text             | IDトークン                   |
+| session_state     | String?  | -                    | セッション状態               |
+
+制約: `@@unique([provider, providerAccountId])`
+
+#### User Table
+
+ユーザー基本情報を管理するテーブル
+
+| カラム名       | データ型  | 制約                 | 説明                   |
+| -------------- | --------- | -------------------- | ---------------------- |
+| id             | String    | @id @default(cuid()) | プライマリキー         |
+| name           | String?   | -                    | ユーザー名             |
+| email          | String    | @unique              | メールアドレス（一意） |
+| emailVerified  | DateTime? | -                    | メール認証日時         |
+| image          | String?   | -                    | プロフィール画像URL    |
+| introduction   | String?   | -                    | 自己紹介               |
+| isAdmin        | Boolean   | @default(false)      | 管理者フラグ           |
+| hashedPassword | String?   | -                    | ハッシュ化パスワード   |
+| createdAt      | DateTime  | @default(now())      | 作成日時               |
+| updatedAt      | DateTime  | @updatedAt           | 更新日時               |
+
+#### PasswordResetToken Table
+
+パスワードリセットトークンを管理するテーブル
+
+| カラム名  | データ型 | 制約                 | 説明                     |
+| --------- | -------- | -------------------- | ------------------------ |
+| id        | String   | @id @default(cuid()) | プライマリキー           |
+| token     | String   | @unique              | リセットトークン（一意） |
+| expiry    | DateTime | -                    | 有効期限                 |
+| userId    | String   | -                    | ユーザーID（外部キー）   |
+| createdAt | DateTime | @default(now())      | 作成日時                 |
+
+#### Book Table
+
+絵本の基本情報を管理するテーブル
+
+| カラム名   | データ型 | 制約                 | 説明                 |
+| ---------- | -------- | -------------------- | -------------------- |
+| id         | String   | @id @default(cuid()) | プライマリキー       |
+| title      | String   | -                    | 絵本タイトル         |
+| subtitle   | String?  | -                    | サブタイトル         |
+| prompt     | String   | @db.Text             | 生成プロンプト       |
+| userId     | String   | -                    | 作成者ID（外部キー） |
+| totalPages | Int      | @default(0)          | 総ページ数           |
+| createdAt  | DateTime | @default(now())      | 作成日時             |
+| updatedAt  | DateTime | @updatedAt           | 更新日時             |
+
+インデックス: `@@index([userId])`
+
+#### Page Table
+
+絵本の各ページ情報を管理するテーブル
+
+| カラム名   | データ型 | 制約                 | 説明               |
+| ---------- | -------- | -------------------- | ------------------ |
+| id         | String   | @id @default(cuid()) | プライマリキー     |
+| bookId     | String   | -                    | 絵本ID（外部キー） |
+| pageNumber | Int      | -                    | ページ番号         |
+| title      | String   | -                    | ページタイトル     |
+| imageUrl   | String?  | -                    | ページ画像URL      |
+| content    | String   | @db.Text             | ページ内容         |
+| createdAt  | DateTime | @default(now())      | 作成日時           |
+
+制約: `@@unique([bookId, pageNumber])`
+インデックス: `@@index([bookId])`
+
+#### リレーション
+
+- User → Account (1対多): ユーザーは複数の認証アカウントを持つ
+- User → PasswordResetToken (1対多): ユーザーは複数のリセットトークンを持つ
+- User → Book (1対多): ユーザーは複数の絵本を作成
+- Book → Page (1対多): 絵本は複数のページを持つ
 
 ### 画面遷移図
 
@@ -70,8 +165,8 @@ Copyright (c) 2025 Novel Smith. All rights reserved.
 
 ### 利用制限
 
-- **複製・改変の禁止**: 本プロジェクトのソースコード、デザイン、コンテンツの無断複製・改変を許可しません
-- **商用利用の制限**: 本プロジェクトを商用目的で利用することを許可しません
-- **リバースエンジニアリングの禁止**: 本ソフトウェアの逆コンパイル、逆アセンブル、リバースエンジニアリングを許可しません
-- **著作権侵害の禁止**: 本プロジェクトの著作権、商標権、その他の知的財産権を侵害する行為を許可しません
-- **第三者への提供禁止**: 本プロジェクトのソースコードを第三者に提供・共有することを許可しません
+- 複製・改変の禁止: 本プロジェクトのソースコード、デザイン、コンテンツの無断複製・改変を許可しません
+- 商用利用の制限: 本プロジェクトを商用目的で利用することを許可しません
+- リバースエンジニアリングの禁止: 本ソフトウェアの逆コンパイル、逆アセンブル、リバースエンジニアリングを許可しません
+- 著作権侵害の禁止: 本プロジェクトの著作権、商標権、その他の知的財産権を侵害する行為を許可しません
+- 第三者への提供禁止: 本プロジェクトのソースコードを第三者に提供・共有することを許可しません
