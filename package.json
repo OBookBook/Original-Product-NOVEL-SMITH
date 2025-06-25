@@ -13,7 +13,8 @@
     "typecheck": "tsc --skipLibCheck true --noEmit",
     "typecheck:full": "tsc --skipLibCheck false --noEmit",
     "clean": "git clean -xdf node_modules dist .next",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "vitest"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
