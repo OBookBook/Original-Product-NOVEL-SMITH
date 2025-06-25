@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,7 +46,6 @@ interface ProfileProps {
 }
 
 const Profile = ({ user }: ProfileProps) => {
-  const router = useRouter();
   const [imageUpload, setImageUpload] = useState<ImageListType>([
     {
       dataURL: user.image ?? "",
@@ -69,7 +67,7 @@ const Profile = ({ user }: ProfileProps) => {
     },
     onSuccess: () => {
       toast.success("プロフィールを更新しました");
-      router.refresh();
+      globalThis.location.reload();
     },
   });
 
