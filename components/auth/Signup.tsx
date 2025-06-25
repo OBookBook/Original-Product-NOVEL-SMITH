@@ -79,7 +79,11 @@ const Signup = () => {
   return (
     <div className="max-w-[400px] m-auto">
       <div className="text-2xl font-bold text-center mb-10">新規登録</div>
-      <Button className="w-full" onClick={handleGoogleSignup} variant="outline">
+      <Button
+        className="w-full cursor-pointer"
+        onClick={handleGoogleSignup}
+        variant="outline"
+      >
         <FcGoogle className="mr-2 h-4 w-4" />
         Googleアカウント
       </Button>
@@ -135,7 +139,11 @@ const Signup = () => {
           <div className="text-sm text-gray-500">
             サインアップすることで、利用規約、プライバシーポリシーに同意したことになります。
           </div>
-          <Button className="w-full" disabled={isPending} type="submit">
+          <Button
+            className="w-full cursor-pointer"
+            disabled={isPending}
+            type="submit"
+          >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             アカウント作成
           </Button>

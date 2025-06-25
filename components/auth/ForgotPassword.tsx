@@ -77,7 +77,11 @@ const ForgotPassword = () => {
             )}
           />
 
-          <Button className="w-full" disabled={isPending} type="submit">
+          <Button
+            className="w-full cursor-pointer"
+            disabled={isPending}
+            type="submit"
+          >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             送信
           </Button>

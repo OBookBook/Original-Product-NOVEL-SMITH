@@ -129,7 +129,11 @@ const Profile = ({ user }: ProfileProps) => {
 
                 {imageList.length > 0 && (
                   <div className="text-center mt-3">
-                    <Button onClick={() => onImageUpdate(0)} variant="outline">
+                    <Button
+                      className="cursor-pointer"
+                      onClick={() => onImageUpdate(0)}
+                      variant="outline"
+                    >
                       アバターを変更
                     </Button>
                   </div>
@@ -172,7 +176,11 @@ const Profile = ({ user }: ProfileProps) => {
             )}
           />
 
-          <Button className="w-full" disabled={isPending} type="submit">
+          <Button
+            className="w-full cursor-pointer"
+            disabled={isPending}
+            type="submit"
+          >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             変更
           </Button>

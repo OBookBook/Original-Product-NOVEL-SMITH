@@ -1,9 +1,9 @@
 "use client";
 
 import { type ReactNode } from "react";
-import AuthProvider from "./providers/AuthProvider";
-import TrpcProvider from "./providers/TrpcProvider";
-import ToastProvider from "./providers/ToastProvider";
+import AuthProvider from "./AuthProvider";
+import TrpcProvider from "./TrpcProvider";
+import ToastProvider from "./ToastProvider";
 
 interface ProvidersProps {
   children: ReactNode;
