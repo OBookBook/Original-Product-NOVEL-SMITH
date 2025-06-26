@@ -91,7 +91,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
   e2e:
-    needs: [lint, format, typecheck, test]
+    needs: setup
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
